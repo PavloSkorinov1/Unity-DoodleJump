@@ -9,13 +9,15 @@ namespace Character
         private Animator _anim;
         private bool _isJump = false;
         private float _horizontalInput;
+        private int _jumpCount;
         
         [Header("Jump Settings")]
         [SerializeField] private float jumpForce = 3;
         [SerializeField] private float groundCheckDistance = 0.2f;
         [SerializeField] private LayerMask groundMask;
         [SerializeField] private Transform groundCheck;
-        
+        [SerializeField] private int maxJumps = 2;
+        [Space]
         [Header("Movement Settings")]
         [SerializeField] private float moveSpeed = 5f;
 
@@ -36,6 +38,11 @@ namespace Character
             CalculateMove();
             CalculateJump();
             CalculateAnimation();
+            
+            if (IsGrounded())
+            {
+                _jumpCount = 0;
+            }
         }
 
         private void CalculateInput()
@@ -56,9 +63,11 @@ namespace Character
 
         private void CalculateJump()
         {
-            if (_isJump && IsGrounded())
-            {                
+            if (_isJump && _jumpCount < maxJumps)
+            {             
+                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, 0f);
                 _rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+                _jumpCount++;
                 _isJump = false;
             }
             else if (_isJump)
