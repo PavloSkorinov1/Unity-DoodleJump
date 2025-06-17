@@ -4,13 +4,13 @@ namespace Camera
 {
     public class ParallaxBackground : MonoBehaviour
     {
-        [SerializeField] private Transform cameraTransform;
+        private Transform cameraTransform;
         [Range(0f, 1f)]
         [SerializeField] private float parallaxStrength = 0.5f; 
 
         private Vector3 lastCameraPosition;
 
-        void Start()
+        void Awake()
         {
             if (UnityEngine.Camera.main != null) cameraTransform = UnityEngine.Camera.main.transform;
             if (cameraTransform == null)

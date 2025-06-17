@@ -33,7 +33,7 @@ namespace Character
             CalculateInput();
         }
 
-        private void FixedUpdate()
+        private void LateUpdate()
         {
             CalculateMove();
             CalculateJump();
@@ -82,11 +82,11 @@ namespace Character
 
             if (_horizontalInput > 0)
             {
-                transform.localScale = new Vector3(3, 3, 1);
+                transform.localScale = new Vector3(1, 1, 1);
             }
             else if (_horizontalInput < 0)
             {
-                transform.localScale = new Vector3(-3, 3, 1);
+                transform.localScale = new Vector3(-1, 1, 1);
             }
             
             _anim.SetBool("IsGrounded", IsGrounded());

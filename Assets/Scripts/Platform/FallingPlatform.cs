@@ -1,27 +1,32 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 
 namespace Platform
 {
-    public class FallingPlatform : MonoBehaviour
+    public class FallingPlatform : ActionBase
     {
-        [SerializeField] private float fallDelay = 0.5f;
-        [SerializeField] private float destroyDelay = 2f;
+        public float fallDelay = 0.5f;
+        public float destroyDelay = 2f;
 
         private Rigidbody2D _rb;
         private Collider2D _platformCollider;
-
-        void Start()
+        
+        protected override void Start()
         {
+            base.Start();
+
             _rb = GetComponent<Rigidbody2D>();
             if (_rb == null)
             {
+                Debug.LogError("FallingPlatform: No Rigidbody2D found");
                 enabled = false;
                 return;
             }
+
             _platformCollider = GetComponent<Collider2D>();
             if (_platformCollider == null)
             {
+                Debug.LogError("FallingPlatform: No Collider2D found");
                 enabled = false;
                 return;
             }
@@ -30,30 +35,37 @@ namespace Platform
             _rb.gravityScale = 0f;
         }
         
-        private void OnCollisionEnter2D(Collision2D collision)
+        protected override void OnCollisionEnter2D(Collision2D collision)
         {
-            if (_rb.bodyType == RigidbodyType2D.Static && collision.gameObject.CompareTag("Player"))
+            if (executeOnCollision && (!executeOnce || !hasExecuted) && _rb.bodyType == RigidbodyType2D.Static)
             {
-                Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
-                if (playerRb == null)
+                if (collision.gameObject.CompareTag("Player"))
                 {
-                    return;
-                }
+                    Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
+                    if (playerRb == null)
+                    {
+                        return;
+                    }
+                    
+                    bool isLandingFromAbove = (playerRb.linearVelocity.y <= 0.1f) &&
+                                              (collision.transform.position.y > _platformCollider.bounds.center.y);
 
-                bool isLandingFromAbove = (playerRb.linearVelocity.y <= 0.1f) && (collision.transform.position.y > _platformCollider.bounds.center.y);
-
-                if (isLandingFromAbove)
-                {
-                    _rb.bodyType = RigidbodyType2D.Kinematic;
-                    StartCoroutine(FallAndDestroy());
+                    if (isLandingFromAbove)
+                    {
+                        base.OnCollisionEnter2D(collision);
+                        _rb.bodyType = RigidbodyType2D.Kinematic;
+                    }
                 }
             }
         }
-        
+        protected override void ExecuteAction()
+        {
+            StartCoroutine(FallAndDestroy());
+        }
         private IEnumerator FallAndDestroy()
         {
             yield return new WaitForSeconds(fallDelay);
-            if (_rb != null)
+            if (_rb)
             {
                 _rb.bodyType = RigidbodyType2D.Dynamic; 
                 _rb.gravityScale = 1f;

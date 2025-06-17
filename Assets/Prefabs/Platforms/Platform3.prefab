@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3289394621909243037}
   - component: {fileID: -3746691512837399820}
   - component: {fileID: 3634848691987287164}
+  - component: {fileID: 878264964682151944}
   m_Layer: 13
   m_Name: Platform3
   m_TagString: Untagged
@@ -104,7 +105,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 150
+  m_SurfaceArc: 180
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -160,3 +161,20 @@ PolygonCollider2D:
       - {x: -0.34757513, y: -0.0025644451}
       - {x: -0.3460622, y: 0.0004826635}
   m_UseDelaunayMesh: 0
+--- !u!114 &878264964682151944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 769245853694288889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c9a8e227aeb8ba49872a4059fb5b6c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  executeOnStart: 1
+  executeOnce: 1
+  executeOnCollision: 0
+  spinSpeed: 80
+  spinAxis: {x: 0, y: 0, z: 1}

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3169714376688086173}
   - component: {fileID: 5623205500937744367}
   - component: {fileID: 1623241999775163975}
+  - component: {fileID: 3428454779654649481}
   m_Layer: 13
   m_Name: Platform1
   m_TagString: Untagged
@@ -161,3 +162,21 @@ PolygonCollider2D:
       - {x: 0.22, y: 0.045283042}
       - {x: 0.21, y: 0.044999998}
   m_UseDelaunayMesh: 0
+--- !u!114 &3428454779654649481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3588141922630108545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb771a8c5ab0b94098ee9a11a3773b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  executeOnStart: 1
+  executeOnce: 1
+  executeOnCollision: 0
+  coinPrefab: {fileID: 100000, guid: 49e6ee33250214a9facc214f3a2fecb7, type: 3}
+  spawnProbability: 0.4
+  spawnOffset: {x: 0, y: 1, z: 0}
