@@ -47,6 +47,9 @@ TagManager:
   - name: Platform
     uniqueID: 964057349
     locked: 0
+  - name: Collectibles
+    uniqueID: 3666530287
+    locked: 0
   - name: Player
     uniqueID: 1049289759
     locked: 0

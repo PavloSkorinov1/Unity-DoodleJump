@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Core.Manager
 {
     public class PlatformManager : MonoBehaviour
     {
+        [Header("Player")]
+        [SerializeField] private Transform playerTransform;
+        
         [Header("Platform Prefabs")]
         [SerializeField] private GameObject[] platformPrefabs;
         [SerializeField] private GameObject fallingPlatformPrefab;
@@ -24,25 +28,13 @@ namespace Core.Manager
 
         [Header("Despawn Control")]
         public float despawnBelowPlayerY = 10f;
-
-        private Transform _playerTransform; 
+        
         private float _lastSpawnY;
         private List<GameObject> _activePlatforms = new List<GameObject>();
 
         void Start()
         {
-            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-            if (playerObject != null)
-            {
-                _playerTransform = playerObject.transform;
-            }
-            else
-            {
-                enabled = false; 
-                return;
-            }
-
-            _lastSpawnY = _playerTransform.position.y + initialSpawnY;
+            _lastSpawnY = playerTransform.position.y + initialSpawnY;
             
             for (int i = 0; i < platformsToGenerateOnStart; i++)
             {
@@ -52,8 +44,8 @@ namespace Core.Manager
 
         void Update()
         {
-            if (_playerTransform == null) return;
-            if (_playerTransform.position.y + spawnAheadOfPlayerY > _lastSpawnY)
+            if (playerTransform == null) return;
+            if (playerTransform.position.y + spawnAheadOfPlayerY > _lastSpawnY)
             {
                 SpawnPlatform();
             }
@@ -98,7 +90,7 @@ namespace Core.Manager
                     continue;
                 }
 
-                if (platform.transform.position.y < _playerTransform.position.y - despawnBelowPlayerY)
+                if (platform.transform.position.y < playerTransform.position.y - despawnBelowPlayerY)
                 {
                     _activePlatforms.RemoveAt(i);
                     Destroy(platform);
