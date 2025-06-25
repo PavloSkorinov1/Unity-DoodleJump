@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace Core.Manager
+namespace Core.Managers.Gameplay
 {
     public class PlatformManager : MonoBehaviour
     {

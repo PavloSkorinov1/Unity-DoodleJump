@@ -1,8 +1,7 @@
-using TMPro;
 using UI.View;
 using UnityEngine;
 
-namespace UI.Managers
+namespace Core.Managers.UI
 {
     public class GameManager : MonoBehaviour
     {

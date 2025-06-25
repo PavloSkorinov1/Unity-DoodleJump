@@ -1,10 +1,10 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI; 
+using Data;
 using TMPro;
 using UI.View;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-namespace UI.Managers
+namespace Core.Managers.UI
 {
     public class GameOverManager : MonoBehaviour
     {
@@ -14,6 +14,8 @@ namespace UI.Managers
         [SerializeField] private GameObject gameOverUI;
         [SerializeField] private TextMeshProUGUI finalScoreText;
         [SerializeField] private TextMeshProUGUI finalDistanceText;
+        [SerializeField] private GameObject nameInputPanel;
+        [SerializeField] private TMP_InputField nameInputField;
         [Header("Scene References")]
         [SerializeField] private string mainMenuSceneName = "MainMenu";
         [Header("Audio")]
@@ -50,11 +52,17 @@ namespace UI.Managers
             {
                 gameOverUI.SetActive(false);
             }
+            if (nameInputPanel != null)
+            {
+                nameInputPanel.SetActive(false);
+            } 
             else
             {
-                Debug.LogError("GameOverManager: 'GameOverManager' GameObject is not assigned");
-                enabled = false; 
+                Debug.LogError("GameOverManager: 'Game Over UI' or 'Name Input Panel' GameObject is not assigned");
+                enabled = false;
+                return;
             }
+            _isGameOver = false;
         }
         
         public void ShowGameOver()
@@ -69,10 +77,14 @@ namespace UI.Managers
             {
                 PauseMenuManager.Instance.ResumeGame();
             }
-            
             if (gameOverUI != null)
             {
                 gameOverUI.SetActive(true);
+            }
+
+            if (nameInputPanel != null)
+            {
+                nameInputPanel.SetActive(true);
             }
             
             if (PlayerTracker.Instance != null)
@@ -100,6 +112,13 @@ namespace UI.Managers
                 Debug.LogWarning("GameOverManager: PlayerTracker instance not found");
             }
             
+            if (nameInputField != null)
+            {
+                nameInputField.text = PlayerPrefs.GetString("LastPlayerName", "");
+                nameInputField.Select();
+                nameInputField.ActivateInputField();
+            }
+            
             // AUDIO
             if (_audioSource != null && gameOverSound != null)
             {
@@ -122,6 +141,50 @@ namespace UI.Managers
             {
                 Debug.LogWarning("GameOverManager: Background Music not assigned");
             }
+        }
+        
+        public void SubmitScore()
+        {
+            string playerName = "Player";
+            if (nameInputField != null && !string.IsNullOrWhiteSpace(nameInputField.text))
+            {
+                playerName = nameInputField.text.Trim();
+                PlayerPrefs.SetString("LastPlayerName", playerName); 
+                PlayerPrefs.Save();
+            }
+            else if (nameInputField != null)
+            {
+                Debug.LogWarning("GameOverManager: Player name input was empty");
+            }
+
+            int score = 0;
+            float distance = 0f;
+
+            if (PlayerTracker.Instance != null)
+            {
+                score = PlayerTracker.Instance.GetScore();
+                distance = PlayerTracker.Instance.GetDistance();
+            }
+            else
+            {
+                Debug.LogWarning("GameOverManager: PlayerTracker not found");
+            }
+            
+            if (LeaderboardSaveData.Instance != null)
+            {
+                LeaderboardSaveData.Instance.SaveLeaderboardEntry(playerName, score, distance);
+            }
+            else
+            {
+                Debug.LogError("GameOverManager: LeaderboardSaveData not found");
+            }
+
+            if (nameInputPanel != null)
+            {
+                nameInputPanel.SetActive(false);
+            }
+
+            Debug.Log($"Submitted Name: {playerName}, Coins: {score}, Distance: {Mathf.FloorToInt(distance)}m");
         }
         
         public void RestartGame()

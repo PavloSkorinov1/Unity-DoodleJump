@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UI.Managers;
+using Core.Managers.UI;
 
 namespace Character
 {

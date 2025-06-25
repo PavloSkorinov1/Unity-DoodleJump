@@ -1,5 +1,3 @@
-using Core.Manager;
-using UI.Managers;
 using UI.View;
 using UnityEngine;
 

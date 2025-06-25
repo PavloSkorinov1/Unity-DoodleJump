@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Manager
+namespace Core.Managers.Gameplay
 {
     public class CollectibleManager : ActionBase
     {

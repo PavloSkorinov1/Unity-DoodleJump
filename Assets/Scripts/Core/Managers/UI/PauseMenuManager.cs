@@ -1,9 +1,7 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; 
-using UnityEngine.UI; 
-using TMPro;
+using UnityEngine.SceneManagement;
 
-namespace UI.Managers
+namespace Core.Managers.UI
 {
     public class PauseMenuManager : MonoBehaviour
     {
@@ -15,10 +13,6 @@ namespace UI.Managers
         [Header("Scene References")]
         [SerializeField] private string mainMenuScene = "MainMenu";
 
-        [Header("Audio")]
-        public AudioClip buttonClickSound;
-
-        private AudioSource _audioSource;
         private bool isGamePaused = false; 
 
         void Awake()
@@ -30,12 +24,6 @@ namespace UI.Managers
             else
             {
                 Destroy(gameObject);
-            }
-            _audioSource = GetComponent<AudioSource>();
-            if (_audioSource == null)
-            {
-                Debug.LogError("PauseMenuManager: AudioSource component is missing");
-                enabled = false;
             }
         }
 
@@ -98,18 +86,6 @@ namespace UI.Managers
         public bool IsGamePaused()
         {
             return isGamePaused;
-        }
-        
-        public void PlayButtonClickSound()
-        {
-            if (_audioSource != null && buttonClickSound != null)
-            {
-                _audioSource.PlayOneShot(buttonClickSound);
-            }
-            else if (buttonClickSound == null)
-            {
-                Debug.LogWarning("PauseMenuManager: AudioClip is not assigned!");
-            }
         }
     }
 }
