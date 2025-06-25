@@ -1,36 +1,46 @@
 using UnityEngine;
+using System.Collections.Generic;
+using UI.Managers;
 
 namespace Character
 {
     public class Player : MonoBehaviour
     {
-
-        private Rigidbody2D _rb;
-        private Animator _anim;
-        private bool _isJump = false;
-        private float _horizontalInput;
-        private int _jumpCount;
-        
         [Header("Jump Settings")]
-        [SerializeField] private float jumpForce = 3;
+        [SerializeField] private float jumpForce = 10f;
         [SerializeField] private float groundCheckDistance = 0.2f;
         [SerializeField] private LayerMask groundMask;
         [SerializeField] private Transform groundCheck;
-        [SerializeField] private int maxJumps = 2;
+        [SerializeField] private int maxJumps = 1;
         [Space]
         [Header("Movement Settings")]
         [SerializeField] private float moveSpeed = 5f;
+        [Header("Audio Settings")]
+        [SerializeField] private AudioClip jumpSound;
+        
+        private Rigidbody2D _rb;
+        private Animator _anim;
+        private AudioSource audioSource;
+        // Jumping
+        private bool _isJump = false;
+        private float _horizontalInput;
+        private int _jumpCount;
+        // Screen Wrapping
+        private UnityEngine.Camera _mainCamera; 
+        private float _screenHalfWidth;
+        private float _playerHalfWidth;
+        // Game Over
+        private float cameraBottomYThreshold;
 
         void Start()
         {
-            groundMask = LayerMask.GetMask("Ground");
-            _rb = GetComponent<Rigidbody2D>();
-            _anim = GetComponent<Animator>();
+            Initialise();
         }
 
         void Update()
         {
             CalculateInput();
+            CheckGameOverCondition();
         }
 
         private void LateUpdate()
@@ -38,10 +48,42 @@ namespace Character
             CalculateMove();
             CalculateJump();
             CalculateAnimation();
+            HandleScreenWrapping();
             
             if (IsGrounded())
             {
                 _jumpCount = 0;
+            }
+        }
+
+        private void Initialise()
+        {
+            groundMask = LayerMask.GetMask("Ground");
+            _rb = GetComponent<Rigidbody2D>();
+            _anim = GetComponent<Animator>();
+            audioSource = GetComponent<AudioSource>();
+            _mainCamera = UnityEngine.Camera.main;
+            
+            if (_mainCamera != null)
+            {
+                _screenHalfWidth = _mainCamera.orthographicSize * _mainCamera.aspect;
+                cameraBottomYThreshold = _mainCamera.transform.position.y - _mainCamera.orthographicSize - 1.0f;
+            }
+            else
+            {
+                Debug.LogError("Player: Main Camera not found");
+                enabled = false;
+            }
+            
+            Collider2D playerCollider = GetComponent<Collider2D>();
+            if (playerCollider != null)
+            {
+                _playerHalfWidth = playerCollider.bounds.extents.x;
+            }
+            else
+            {
+                Debug.LogWarning("Player: No Collider2D found ");
+                _playerHalfWidth = 0.5f;
             }
         }
 
@@ -67,6 +109,10 @@ namespace Character
             {             
                 _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, 0f);
                 _rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+                if (audioSource != null && jumpSound != null)
+                {
+                    audioSource.PlayOneShot(jumpSound);
+                }
                 _jumpCount++;
                 _isJump = false;
             }
@@ -93,11 +139,47 @@ namespace Character
             _anim.SetFloat("VerticalSpeed", _rb.linearVelocity.y);
         }
         
+        private void HandleScreenWrapping()
+        {
+            if (_mainCamera == null) return;
+
+            float playerX = transform.position.x;
+            float cameraX = _mainCamera.transform.position.x;
+            
+            float leftScreenEdge = cameraX - _screenHalfWidth;
+            float rightScreenEdge = cameraX + _screenHalfWidth;
+
+            if (playerX > rightScreenEdge + _playerHalfWidth)
+            {
+                transform.position = new Vector3(leftScreenEdge, transform.position.y, transform.position.z);
+            }
+            else if (playerX < leftScreenEdge - _playerHalfWidth)
+            {
+                transform.position = new Vector3(rightScreenEdge, transform.position.y, transform.position.z);
+            }
+        }
+        
         private bool IsGrounded()
         {
             if (groundCheck == null) return false;
             RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckDistance, groundMask);
             return hit.collider != null;
         }
+        
+        private void CheckGameOverCondition()
+        {
+            if (_mainCamera == null) return;
+            
+            cameraBottomYThreshold = _mainCamera.transform.position.y - _mainCamera.orthographicSize - 1.0f;
+
+            if (transform.position.y < cameraBottomYThreshold)
+            {
+                if (GameOverManager.Instance != null && !GameOverManager.Instance.IsGameOver())
+                {
+                    GameOverManager.Instance.ShowGameOver();
+                }
+            }
+        }
+
     }
 }

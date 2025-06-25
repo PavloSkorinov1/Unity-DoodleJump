@@ -12,6 +12,18 @@ namespace Camera
 
         void Awake()
         {
+            Initialise();
+        }
+
+        void LateUpdate()
+        {
+            Vector3 deltaMovement = cameraTransform.position - lastCameraPosition;
+            transform.position += new Vector3(deltaMovement.x * parallaxStrength, deltaMovement.y * parallaxStrength, 0);
+            lastCameraPosition = cameraTransform.position;
+        }
+
+        private void Initialise()
+        {
             if (UnityEngine.Camera.main != null) cameraTransform = UnityEngine.Camera.main.transform;
             if (cameraTransform == null)
             {
@@ -19,12 +31,6 @@ namespace Camera
                 enabled = false;
                 return;
             }
-            lastCameraPosition = cameraTransform.position;
-        }
-        void LateUpdate()
-        {
-            Vector3 deltaMovement = cameraTransform.position - lastCameraPosition;
-            transform.position += new Vector3(deltaMovement.x * parallaxStrength, deltaMovement.y * parallaxStrength, 0);
             lastCameraPosition = cameraTransform.position;
         }
     }

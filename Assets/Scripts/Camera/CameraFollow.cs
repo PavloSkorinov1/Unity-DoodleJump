@@ -1,30 +1,40 @@
 using UnityEngine;
 
-namespace Core.Manager
+namespace Camera
 {
     public class CameraFollow : MonoBehaviour
     {
         [SerializeField] private Transform target;
         [SerializeField] private float smoothTime;
-        [Space] 
-        [SerializeField] private bool followX;
-        [SerializeField] private bool followY;
-        [SerializeField] private bool followZ;
+        [SerializeField] private UnityEngine.Camera mainCamera;
+        
+        private float initialCameraX;
+
+
+        private void Awake()
+        {
+            initialCameraX = transform.position.x;
+            if (mainCamera == null)
+            {
+                Debug.LogError("CameraFollow: No Camera component found", this);
+                enabled = false;
+            }
+        }
 
         private void FixedUpdate()
         {
-            if (target == null || !target.gameObject.activeInHierarchy)
+            if (target == null || !target.gameObject.activeInHierarchy || mainCamera == null)
             {
                 return;
             }
-            
-            var targetPos = new Vector3(
-                followX ? target.position.x : transform.position.x,
-                followY ? target.position.y : transform.position.y,
-                followZ ? target.position.z : transform.position.z
+
+            float targetCameraY = Mathf.Max(transform.position.y, target.position.y);
+            Vector3 targetPos = new Vector3(
+                initialCameraX,
+                Mathf.Lerp(transform.position.y, targetCameraY, smoothTime),
+                transform.position.z
             );
-                        
-            transform.position = Vector3.Lerp(transform.position, targetPos,  smoothTime* Time.deltaTime);
+            transform.position = targetPos;
         }
     }
 }

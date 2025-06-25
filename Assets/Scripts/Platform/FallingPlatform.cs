@@ -5,18 +5,23 @@ namespace Platform
 {
     public class FallingPlatform : ActionBase
     {
+        [SerializeField] private Rigidbody2D rb;
+        
         public float fallDelay = 0.5f;
         public float destroyDelay = 2f;
 
-        private Rigidbody2D _rb;
         private Collider2D _platformCollider;
         
         protected override void Start()
         {
             base.Start();
 
-            _rb = GetComponent<Rigidbody2D>();
-            if (_rb == null)
+            Initialise();
+        }
+
+        private void Initialise()
+        {
+            if (rb == null)
             {
                 Debug.LogError("FallingPlatform: No Rigidbody2D found");
                 enabled = false;
@@ -31,13 +36,13 @@ namespace Platform
                 return;
             }
             
-            _rb.bodyType = RigidbodyType2D.Static;
-            _rb.gravityScale = 0f;
+            rb.bodyType = RigidbodyType2D.Static;
+            rb.gravityScale = 0f;
         }
-        
+
         protected override void OnCollisionEnter2D(Collision2D collision)
         {
-            if (executeOnCollision && (!executeOnce || !hasExecuted) && _rb.bodyType == RigidbodyType2D.Static)
+            if (executeOnCollision && (!executeOnce || !hasExecuted) && rb.bodyType == RigidbodyType2D.Static)
             {
                 if (collision.gameObject.CompareTag("Player"))
                 {
@@ -53,7 +58,7 @@ namespace Platform
                     if (isLandingFromAbove)
                     {
                         base.OnCollisionEnter2D(collision);
-                        _rb.bodyType = RigidbodyType2D.Kinematic;
+                        rb.bodyType = RigidbodyType2D.Kinematic;
                     }
                 }
             }
@@ -65,10 +70,10 @@ namespace Platform
         private IEnumerator FallAndDestroy()
         {
             yield return new WaitForSeconds(fallDelay);
-            if (_rb)
+            if (rb)
             {
-                _rb.bodyType = RigidbodyType2D.Dynamic; 
-                _rb.gravityScale = 1f;
+                rb.bodyType = RigidbodyType2D.Dynamic; 
+                rb.gravityScale = 1f;
             }
             yield return new WaitForSeconds(destroyDelay);
             Destroy(gameObject);

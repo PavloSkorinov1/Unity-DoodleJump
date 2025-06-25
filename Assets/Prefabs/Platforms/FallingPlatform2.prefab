@@ -199,6 +199,7 @@ MonoBehaviour:
   executeOnStart: 0
   executeOnce: 1
   executeOnCollision: 1
+  rb: {fileID: -4357533725538433822}
   fallDelay: 0.2
   destroyDelay: 2
 --- !u!114 &3205767969232296739
