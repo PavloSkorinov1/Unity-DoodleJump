@@ -58,6 +58,3 @@ Jump or W or
 
 
 Enjoy the climb, and may your high score reach the clouds! 🌤️
-
-
-::contentReference[oaicite:0]{index=0}
