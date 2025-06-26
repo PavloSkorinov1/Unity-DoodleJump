@@ -8,6 +8,7 @@ namespace Data
 {
     public class LeaderboardDisplayManager : MonoBehaviour
     {
+        public static LeaderboardDisplayManager Instance {get; private set;}
         [Header("UI References")]
         [SerializeField] private Transform leaderboardContentParent;
         [SerializeField] private GameObject leaderboardEntryPrefab;
@@ -16,6 +17,15 @@ namespace Data
         
         void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            return;
+        }
+        
         _leaderboardSaveData = LeaderboardSaveData.Instance;
         if (_leaderboardSaveData == null)
         {

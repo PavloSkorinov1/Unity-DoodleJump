@@ -1,6 +1,8 @@
+using Core.Managers.Audio;
 using Data;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Core.Managers.UI
 {
@@ -10,6 +12,7 @@ namespace Core.Managers.UI
         [SerializeField] private GameObject leaderboardsUI;
         [SerializeField] private GameObject mainMenuUI;
         [SerializeField] private LeaderboardDisplayManager _leaderboardDisplayManager;
+        [SerializeField] private Button clearLeaderboardButton;
             
         [Header("Scene References")]
         [SerializeField] private string mainGameScene = "MainGame";
@@ -71,6 +74,41 @@ namespace Core.Managers.UI
             if (_leaderboardDisplayManager != null)
             {
                 _leaderboardDisplayManager.RefreshLeaderboardDisplay();
+            }
+            
+            if (clearLeaderboardButton != null)
+            {
+                clearLeaderboardButton.onClick.RemoveAllListeners();
+
+                if (LeaderboardSaveData.Instance != null)
+                {
+                    clearLeaderboardButton.onClick.AddListener(LeaderboardSaveData.Instance.ClearLeaderboardData);
+
+                    if (LeaderboardDisplayManager.Instance != null)
+                    {
+                        clearLeaderboardButton.onClick.AddListener(LeaderboardDisplayManager.Instance.RefreshLeaderboardDisplay);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("MainMenuManager: LeaderboardDisplayManager instance not found");
+                    }
+                    if (AudioManager.Instance != null)
+                    {
+                        clearLeaderboardButton.onClick.AddListener(AudioManager.Instance.PlayButtonClickSound);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("MainMenuManager: AudioManager instance not found");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("MainMenuManager: LeaderboardSaveData.Instance is NULL ");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("MainMenuManager: Clear Leaderboard Button is not assigned in the Inspector!");
             }
             
         }
